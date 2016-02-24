@@ -6,6 +6,7 @@
  */
 
 #include "Pawn.h"
+#include <ostream>
 
 Pawn::Pawn(size_t startX, size_t startY, Direction direction)
 : onPosition{startX, startY},
@@ -41,3 +42,16 @@ void Pawn::move()
 {
 	on = !on;
 }
+
+std::ostream& Pawn::print(std::ostream& stream) const
+{
+	return stream << "Pawn{ "
+			<< std::get<0>(position()) << ", "
+			<< std::get<1>(position()) << " }";
+}
+
+std::ostream& operator<<(std::ostream& stream, const Pawn& pawn)
+{
+	return pawn.print(stream);
+}
+

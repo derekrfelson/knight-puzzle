@@ -3,7 +3,7 @@
 using namespace std;
 
 int main(void) {
-	auto gb = GameBoard{};
+	GameBoard gb;
 	cout << gb << endl;
 	return 0;
 }

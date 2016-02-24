@@ -10,17 +10,18 @@
 #include <random>
 #include "GameBoard.h"
 #include "Pawn.h"
+#include "Knight.h"
 using namespace std;
 
 GameBoard::GameBoard()
-: size{18}, pawns{}
+: size{18}, pawns{}, knight{nullptr}
 {
 	// Seed the random number generator with random data from the OS
 	auto gen = std::mt19937{std::random_device{}()};
-	auto randBoardSize = std::uniform_int_distribution<size_t>{0, size};
+	auto randBoardSize = std::uniform_int_distribution<size_t>{0, size-1};
 	auto randDirection = std::uniform_int_distribution<size_t>(0, 3);
 
-	// Generate the pawns we start with
+	// Generate the pawns we start with, making sure each has a valid place
 	for (auto i = 0; i < 8; ++i)
 	{
 		auto validPawn = false;
@@ -85,11 +86,44 @@ GameBoard::GameBoard()
 				}
 			}
 
+			// Generate the pawn
 			if (validPawn)
 			{
-				// Generate the pawn
 				pawns.emplace_back(Pawn{startX, startY, d});
 			}
+		}
+	}
+
+	// Find a valid place for the knight next
+	auto validKnight = false;
+	while (!validKnight)
+	{
+		validKnight = true;
+
+		// Randomly pick a spot for the knight to start
+		auto knightX = randBoardSize(gen);
+		auto knightY = randBoardSize(gen);
+
+		// Disallow knight too close to a pawn
+		for (auto pawn : pawns)
+		{
+			auto otherX = get<0>(pawn.position());
+			auto otherY = get<1>(pawn.position());
+			// Careful subtraction with unsigned numbers
+			auto diffX =
+					otherX < knightX ? knightX - otherX : otherX - knightX;
+			auto diffY =
+					otherY < knightY ? knightY - otherY : otherY - knightY;
+			if (diffX <= 2 && diffY <= 2)
+			{
+				validKnight = false;
+			}
+		}
+
+		// Make the knight
+		if (validKnight)
+		{
+			knight = make_unique<Knight>(knightX, knightY);
 		}
 	}
 }
@@ -132,6 +166,13 @@ ostream& GameBoard::print(ostream& stream) const
 		stream << "#";
 	}
 	stream << endl;
+
+	for (auto pawn : pawns)
+	{
+		stream << pawn << endl;
+	}
+	stream << *knight << endl;
+
 	return stream;
 }
 
@@ -150,7 +191,12 @@ bool GameBoard::isPawn(size_t x, size_t y) const
 
 bool GameBoard::isKnight(size_t x, size_t y) const
 {
-	return false;
+	return x == get<0>(knight->position()) && y == get<1>(knight->position());
+}
+
+// Cannot default this due to use of unique_ptrs
+GameBoard::~GameBoard()
+{
 }
 
 std::ostream& operator<< (std::ostream& stream, const GameBoard& board)
