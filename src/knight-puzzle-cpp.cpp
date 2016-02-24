@@ -1,8 +1,9 @@
 #include <iostream>
-
+#include "GameBoard.h"
 using namespace std;
 
 int main(void) {
-	cout << "Hello World" << endl; /* prints Hello World */
+	auto gb = GameBoard{};
+	cout << gb << endl;
 	return 0;
 }
