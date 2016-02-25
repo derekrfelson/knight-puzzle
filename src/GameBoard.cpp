@@ -5,6 +5,7 @@
  *      Author: derek
  */
 
+#include <iostream>
 #include <ostream>
 #include <random>
 #include <stack>
@@ -233,6 +234,16 @@ void GameBoard::next()
 				knight->position());
 	}
 
-	// Move the knight
+	// If no moves found, do nothing
+	if (moves.empty())
+	{
+		cout << "No moves found!" << endl;
+		return;
+	}
 
+	// Move the knight
+	knight->move(moves.front());
+
+	// Go to the next move in the stack
+	moves.pop_front();
 }

@@ -6,34 +6,42 @@
  */
 
 #include <iostream>
+#include <memory>
 #include <queue>
-#include <stack>
+#include <list>
 #include "BFSMoveProvider.h"
 #include "Node.h"
+#include "State.h"
 
-std::stack<size_t> getBFSMoves(bool pawnsInOnState,
-		std::bitset<8> pawnsCapturedState,
-		std::tuple<size_t, size_t> knightPosition)
+std::list<size_t> getBFSMoves(State state)
 {
+	Node::visitedList().clear();
+
 	// Create root node of search tree
-	auto fringe = std::queue<Node>{}; // BFS uses a queue
-	fringe.emplace(Node{pawnsInOnState, pawnsCapturedState, knightPosition});
+	auto fringe = std::queue<Node*> {}; // BFS uses a queue
+	fringe.emplace(Node::visitedList().find(state.toString())->second);
 
 	auto i = 0;
 
 	while (!fringe.empty())
 	{
-		std::cout << "Nodes: " << i << std::endl;
 		++i;
-		Node currentNode = fringe.front();
+		std::shared_ptr<Node> currentNode = fringe.front();
 		fringe.pop();
-		if (currentNode.isGoalState())
+
+		auto newNodes = currentNode->expand();
+
+		for (auto n : newNodes)
 		{
-			return currentNode.getPathToRoot();
-		}
-		for (auto n : currentNode.expand())
-		{
-			fringe.push(n);
+			if (n->isGoalState())
+			{
+				std::cout << "Nodes searched: " << i << std::endl;
+				return n->getPathToRoot();
+			}
+			else
+			{
+				fringe.push(n);
+			}
 		}
 	}
 }

@@ -11,9 +11,9 @@
 #include <cstddef>
 #include <bitset>
 #include <tuple>
-#include <stack>
+#include <list>
 
-std::stack<size_t> getBFSMoves(bool pawnsInOnState,
+std::list<size_t> getBFSMoves(bool pawnsInOnState,
 		std::bitset<8> pawnsCapturedState,
 		std::tuple<size_t, size_t> knightPosition);
 

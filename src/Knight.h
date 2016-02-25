@@ -16,6 +16,7 @@ class Knight {
 public:
 	explicit Knight(size_t startX, size_t startY);
 	std::tuple<size_t, size_t> position() const;
+	void move(size_t moveIndex);
 	std::ostream& print(std::ostream& stream) const;
 private:
 	size_t xpos;
