@@ -5,16 +5,21 @@
  *      Author: derek
  */
 
-#include <iostream>
 #include <ostream>
 #include <random>
+#include <stack>
 #include "GameBoard.h"
 #include "Pawn.h"
+//#include "Node.h"
 #include "Knight.h"
 using namespace std;
 
 GameBoard::GameBoard()
-: size{18}, pawns{}, knight{nullptr}
+: size{18},
+  numStartingPawns{8},
+  pawnsInOnState{true},
+  pawnsCapturedState{0},
+  knight{nullptr}
 {
 	// Seed the random number generator with random data from the OS
 	auto gen = std::mt19937{std::random_device{}()};
@@ -22,7 +27,7 @@ GameBoard::GameBoard()
 	auto randDirection = std::uniform_int_distribution<size_t>(0, 3);
 
 	// Generate the pawns we start with, making sure each has a valid place
-	for (auto i = 0; i < 8; ++i)
+	for (auto i = 0; i < numStartingPawns; ++i)
 	{
 		auto validPawn = false;
 
@@ -71,7 +76,7 @@ GameBoard::GameBoard()
 			}
 
 			// Disallow pawns too close to one another
-			for (auto pawn : pawns)
+			for (auto pawn : pawns())
 			{
 				auto otherX = get<0>(pawn.position());
 				auto otherY = get<1>(pawn.position());
@@ -89,7 +94,7 @@ GameBoard::GameBoard()
 			// Generate the pawn
 			if (validPawn)
 			{
-				pawns.emplace_back(Pawn{startX, startY, d});
+				pawns().emplace_back(Pawn{startX, startY, d});
 			}
 		}
 	}
@@ -105,7 +110,7 @@ GameBoard::GameBoard()
 		auto knightY = randBoardSize(gen);
 
 		// Disallow knight too close to a pawn
-		for (auto pawn : pawns)
+		for (auto pawn : pawns())
 		{
 			auto otherX = get<0>(pawn.position());
 			auto otherY = get<1>(pawn.position());
@@ -126,6 +131,12 @@ GameBoard::GameBoard()
 			knight = make_unique<Knight>(knightX, knightY);
 		}
 	}
+}
+
+std::vector<Pawn>& GameBoard::pawns()
+{
+	static std::vector<Pawn>* pawns = new std::vector<Pawn>{};
+	return *pawns;
 }
 
 ostream& GameBoard::print(ostream& stream) const
@@ -167,7 +178,8 @@ ostream& GameBoard::print(ostream& stream) const
 	}
 	stream << endl;
 
-	for (auto pawn : pawns)
+	// Extra debug information
+	for (auto pawn : pawns())
 	{
 		stream << pawn << endl;
 	}
@@ -178,7 +190,7 @@ ostream& GameBoard::print(ostream& stream) const
 
 bool GameBoard::isPawn(size_t x, size_t y) const
 {
-	for (auto pawn : pawns)
+	for (auto pawn : pawns())
 	{
 		if (get<0>(pawn.position()) == x
 				&& get<1>(pawn.position()) == y)
@@ -202,4 +214,46 @@ GameBoard::~GameBoard()
 std::ostream& operator<< (std::ostream& stream, const GameBoard& board)
 {
 	return board.print(stream);
+}
+
+void GameBoard::next()
+{
+	// Toggle each of the pawn positions
+	for (auto& pawn : pawns())
+	{
+		pawn.move();
+	}
+
+	// Figure out how to move the knight
+
+	// Create root node of search tree
+	/*auto fringe = stack<Node>{};
+	fringe.emplace(Node{pawnsInOnState, pawnsCapturedState});
+
+	while (!fringe.empty())
+	{
+		if (fringe.top().hasNextNode())
+		{
+			// Expand the next node, and make that the top of the stack
+			fringe.top().expandNextNode(fringe);
+			// Following ordinary stack rules, we can only ever operate on the
+			// top element, so go back to the start of the loop.
+		}
+		else
+		{
+			if (fringe.size() > 1)
+			{
+				fringe.top().updateParent();
+				fringe.pop();
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	return fringe.top().getBestMove();*/
+
+
 }

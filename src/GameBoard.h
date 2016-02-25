@@ -11,6 +11,7 @@
 #include <iosfwd>
 #include <cstddef>
 #include <vector>
+#include <bitset>
 #include <memory>
 #include "Pawn.h"
 class Knight;
@@ -20,9 +21,13 @@ public:
 	explicit GameBoard();
 	~GameBoard();
 	std::ostream& print(std::ostream& stream) const;
+	void next();
+	static std::vector<Pawn>& pawns();
 private:
-	size_t size;
-	std::vector<Pawn> pawns;
+	const size_t size;
+	const size_t numStartingPawns;
+	bool pawnsInOnState;
+	std::bitset<8> pawnsCapturedState;
 	std::unique_ptr<Knight> knight;
 	bool isPawn(size_t x, size_t y) const;
 	bool isKnight(size_t x, size_t y) const;

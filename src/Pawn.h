@@ -18,6 +18,7 @@ class Pawn {
 public:
 	explicit Pawn(size_t startX, size_t startY, Direction direction);
 	std::tuple<size_t, size_t> position() const;
+	std::tuple<size_t, size_t> position(bool on) const;
 	void move();
 	std::ostream& print(std::ostream& stream) const;
 private:

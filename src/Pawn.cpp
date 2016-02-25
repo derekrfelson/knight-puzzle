@@ -38,6 +38,11 @@ std::tuple<size_t, size_t> Pawn::position() const
 	return on ? onPosition : offPosition;
 }
 
+std::tuple<size_t, size_t> Pawn::position(bool on) const
+{
+	return on ? onPosition : offPosition;
+}
+
 void Pawn::move()
 {
 	on = !on;
