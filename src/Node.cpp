@@ -7,27 +7,29 @@
 
 #include "Node.h"
 #include "GameBoard.h"
+#include "Types.h"
 
-constexpr std::array<std::tuple<int, int>, 8> Node::MoveOrder;
-
+// Create a Node based on the current state of the GameBoard
 Node::Node(bool pawnsInOnState,
-		std::bitset<8> oldPawnsCapturedState,
+		std::bitset<8> pawnsCapturedState,
 		std::tuple<size_t, size_t> knightPosition)
 : pawnsInOnState{pawnsInOnState},
   pawnsCapturedState{pawnsCapturedState},
   knightPosition{knightPosition},
-  parent{nullptr}
+  parent{nullptr},
+  action{NoAction}
 {
 }
 
+// Create a child Node based on making a move from the current node
 Node::Node(const Node& parentNode, size_t moveIndex)
 : Node(!parentNode.pawnsInOnState,
 		parentNode.pawnsCapturedState,
 		std::tuple<size_t, size_t>{
 		  std::get<0>(parentNode.knightPosition)
-			  + std::get<0>(Node::MoveOrder[moveIndex]),
+			  + std::get<0>(MoveOrder[moveIndex]),
 		  std::get<1>(parentNode.knightPosition)
-		  	  + std::get<1>(Node::MoveOrder[moveIndex])})
+		  	  + std::get<1>(MoveOrder[moveIndex])})
 {
 	this->parent = &parentNode;
 
@@ -49,8 +51,8 @@ Node::Node(const Node& parentNode, size_t moveIndex)
 // Simply does bounds checking on a possible move, given the board state
 bool Node::isValidMove(size_t moveIndex) const
 {
-	auto xDiff = std::get<0>(Node::MoveOrder[moveIndex]);
-	auto yDiff = std::get<1>(Node::MoveOrder[moveIndex]);
+	auto xDiff = std::get<0>(MoveOrder[moveIndex]);
+	auto yDiff = std::get<1>(MoveOrder[moveIndex]);
 	auto xPos = std::get<0>(Node::knightPosition);
 	auto yPos = std::get<1>(Node::knightPosition);
 
@@ -87,11 +89,12 @@ bool Node::isValidMove(size_t moveIndex) const
 	return true;
 }
 
+// Returns all the nodes you can reach from this node's state
 std::list<Node> Node::expand()
 {
 	auto successors = std::list<Node>{};
 
-	for (size_t i = 0; i < Node::MoveOrder.size(); ++i)
+	for (size_t i = 0; i < MoveOrder.size(); ++i)
 	{
 		if (isValidMove(i))
 		{
@@ -100,4 +103,27 @@ std::list<Node> Node::expand()
 	}
 
 	return successors;
+}
+
+// A goal state is any state in which we have captured all the pawns,
+// or we have captured more pawns than before.
+bool Node::isGoalState() const
+{
+	return pawnsCapturedState.all()
+			|| (parent != nullptr
+					&& parent->pawnsCapturedState.count()
+					< pawnsCapturedState.count());
+}
+
+// Returns all the moves we took to get here from the root
+std::stack<size_t> Node::getPathToRoot()
+{
+	auto moves = std::stack<size_t>{};
+	const Node* currentNode = this;
+	while (currentNode->action != NoAction)
+	{
+		moves.emplace(currentNode->action);
+		currentNode = currentNode->parent;
+	}
+	return moves;
 }

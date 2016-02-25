@@ -13,6 +13,7 @@
 #include <vector>
 #include <bitset>
 #include <memory>
+#include <stack>
 #include "Pawn.h"
 class Knight;
 
@@ -29,6 +30,7 @@ private:
 	bool pawnsInOnState;
 	std::bitset<8> pawnsCapturedState;
 	std::unique_ptr<Knight> knight;
+	std::stack<size_t> moves;
 	bool isPawn(size_t x, size_t y) const;
 	bool isKnight(size_t x, size_t y) const;
 };

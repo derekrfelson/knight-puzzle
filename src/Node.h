@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <bitset>
 #include <tuple>
+#include <stack>
 #include <list>
 #include <array>
 
@@ -19,8 +20,9 @@ public:
 	explicit Node(bool pawnsInOnState,
 			std::bitset<8> pawnsCapturedState,
 			std::tuple<size_t, size_t> knightPosition);
-	explicit Node(const Node& parent, size_t moveIndex);
 	std::list<Node> expand();
+	bool isGoalState() const;
+	std::stack<size_t> getPathToRoot();
 private:
 	// State
 	bool pawnsInOnState;
@@ -28,18 +30,9 @@ private:
 	std::tuple<size_t, size_t> knightPosition;
 	// Node recordkeeping
 	const Node* parent;
-	static constexpr auto MoveOrder = std::array<std::tuple<int, int>, 8>
-	{
-			std::tuple<int, int>{1,-2}, // Right 1, up 2
-			std::tuple<int, int>{2,-1}, // Right 2, up 1
-			std::tuple<int, int>{2,1},  // Right 2, down 1
-			std::tuple<int, int>{1,2},  // Right 1, down 2
-			std::tuple<int, int>{-1,2}, // Left 1,  down 2
-			std::tuple<int, int>{-2,1}, // Left 2,  down 1
-			std::tuple<int, int>{-2,-1}, // Left 2,  up 1
-			std::tuple<int, int>{-1,-2}  // Left 1,  up 2
-	};
+	size_t action;
 private: // Member functions
+	explicit Node(const Node& parent, size_t moveIndex);
 	bool isValidMove(size_t moveIndex) const;
 };
 

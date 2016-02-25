@@ -10,7 +10,7 @@
 #include <stack>
 #include "GameBoard.h"
 #include "Pawn.h"
-//#include "Node.h"
+#include "BFSMoveProvider.h"
 #include "Knight.h"
 using namespace std;
 
@@ -19,7 +19,8 @@ GameBoard::GameBoard()
   numStartingPawns{8},
   pawnsInOnState{true},
   pawnsCapturedState{0},
-  knight{nullptr}
+  knight{nullptr},
+  moves{}
 {
 	// Seed the random number generator with random data from the OS
 	auto gen = std::mt19937{std::random_device{}()};
@@ -225,35 +226,13 @@ void GameBoard::next()
 	}
 
 	// Figure out how to move the knight
-
-	// Create root node of search tree
-	/*auto fringe = stack<Node>{};
-	fringe.emplace(Node{pawnsInOnState, pawnsCapturedState});
-
-	while (!fringe.empty())
+	if (moves.empty())
 	{
-		if (fringe.top().hasNextNode())
-		{
-			// Expand the next node, and make that the top of the stack
-			fringe.top().expandNextNode(fringe);
-			// Following ordinary stack rules, we can only ever operate on the
-			// top element, so go back to the start of the loop.
-		}
-		else
-		{
-			if (fringe.size() > 1)
-			{
-				fringe.top().updateParent();
-				fringe.pop();
-			}
-			else
-			{
-				break;
-			}
-		}
+		moves = getBFSMoves(pawnsInOnState,
+				pawnsCapturedState,
+				knight->position());
 	}
 
-	return fringe.top().getBestMove();*/
-
+	// Move the knight
 
 }
