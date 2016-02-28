@@ -12,9 +12,8 @@
 #include <bitset>
 #include <tuple>
 #include <list>
+class State;
 
-std::list<size_t> getBFSMoves(bool pawnsInOnState,
-		std::bitset<8> pawnsCapturedState,
-		std::tuple<size_t, size_t> knightPosition);
+std::list<size_t> getBFSMoves(const State& state);
 
 #endif /* SRC_BFSMOVEPROVIDER_H_ */

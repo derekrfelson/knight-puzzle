@@ -13,6 +13,7 @@
 #include "Pawn.h"
 #include "BFSMoveProvider.h"
 #include "Knight.h"
+#include "State.h"
 using namespace std;
 
 GameBoard::GameBoard()
@@ -229,9 +230,12 @@ void GameBoard::next()
 	// Figure out how to move the knight
 	if (moves.empty())
 	{
-		moves = getBFSMoves(pawnsInOnState,
-				pawnsCapturedState,
-				knight->position());
+		moves = getBFSMoves(
+				State {
+					pawnsInOnState,
+					pawnsCapturedState,
+					knight->position()
+				});
 	}
 
 	// If no moves found, do nothing

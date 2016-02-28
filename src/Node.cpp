@@ -7,52 +7,28 @@
 
 #include <cassert>
 #include <iostream>
-#include <unordered_map>
 #include "Node.h"
 #include "State.h"
 #include "GameBoard.h"
 #include "Types.h"
+#include "VisitedNodes.h"
 
 // Create a Node based on the current state of the GameBoard
-Node::Node(bool pawnsInOnState,
-		std::bitset<8> pawnsCapturedState,
-		std::tuple<size_t, size_t> knightPosition)
-: state{
-	pawnsInOnState,
-	pawnsCapturedState,
-	knightPosition
-  },
+Node::Node(const State& state)
+: state{state},
   parent{nullptr},
   action{NoAction}
 {
 }
 
 // Create a child Node based on making a move from the current node
-Node::Node(const Node& parentNode, size_t moveIndex)
-: Node(!parentNode.state.pawnsInOnState,
-		parentNode.state.pawnsCapturedState,
-		std::tuple<size_t, size_t>{
-		  std::get<0>(parentNode.state.knightPosition)
-			  + std::get<0>(MoveOrder[moveIndex]),
-		  std::get<1>(parentNode.state.knightPosition)
-		  	  + std::get<1>(MoveOrder[moveIndex])})
+Node::Node(const State& parentState,
+		std::shared_ptr<Node> parent, size_t moveIndex)
+: Node{State{parentState}}
 {
-	this->parent = &parentNode;
+	state.move(moveIndex);
+	this->parent = parent;
 	this->action = moveIndex;
-
-	// Update the pawn capture states
-	for (auto i = 0; i < 8; ++i)
-	{
-		if (!state.pawnsCapturedState[i])
-		{
-			// Pawn is still free, so see if knight is on top of it now
-			if (state.knightPosition
-					== GameBoard::pawns()[i].position(state.pawnsInOnState))
-			{
-				state.pawnsCapturedState[i] = 1;
-			}
-		}
-	}
 }
 
 // Can't default this because of unique_ptr
@@ -102,28 +78,26 @@ bool Node::isValidMove(size_t moveIndex) const
 }
 
 // Returns all the nodes you can reach from this node's state
-std::list<Node*> Node::expand()
+std::list<std::shared_ptr<Node> > Node::expand()
 {
-	auto successors = std::list<Node*>{};
+	auto successors = std::list<std::shared_ptr<Node> >{};
 
 	for (size_t i = 0; i < MoveOrder.size(); ++i)
 	{
 		if (isValidMove(i))
 		{
-			auto newNode = new Node{*this, i};
-			auto newState = newNode->state;
-			if (Node::visitedList().find(newState.toString()) == Node::visitedList().end())
+			auto newState = state;
+			newState.move(i);
+			if (!VisitedNodes::contains(newState))
 			{
-				Node::visitedList().insert({newState.toString(), newNode});
-				auto persistentNodeRef = *(Node::visitedList().find(newState.toString()));
-				//std::cout << persistentNodeRef << std::endl;
-				//std::cout << "Expanding node, passing address of " << persistentNodeRef << std::endl;
-				successors.push_back(persistentNodeRef.second);
+				VisitedNodes::insert(newState, state, i);
 			}
-			else
-			{
-				delete newNode;
-			}
+
+			auto persistentNodeRef = VisitedNodes::get(newState);
+			//std::cout << persistentNodeRef << std::endl;
+			//std::cout << "Expanding node, passing address of "
+			//          << persistentNodeRef << std::endl;
+			successors.push_back(persistentNodeRef);
 		}
 	}
 
@@ -161,17 +135,10 @@ std::list<size_t> Node::getPathToRoot()
 	{
 		std::cout << *currentNode << std::endl;
 		moves.push_front(currentNode->action);
-		currentNode = currentNode->parent;
+		currentNode = currentNode->parent.get();
 	}
 	return moves;
 }
-
-std::unordered_map<std::string, Node*>& Node::visitedList()
-{
-	static auto* visited = new std::unordered_map<std::string, Node*>{};
-	return *visited;
-}
-
 
 std::ostream& Node::print(std::ostream& stream) const
 {

@@ -5,6 +5,7 @@
  *      Author: derek
  */
 
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -12,15 +13,18 @@
 #include "BFSMoveProvider.h"
 #include "Node.h"
 #include "State.h"
+#include "VisitedNodes.h"
 
-std::list<size_t> getBFSMoves(State state)
+std::list<size_t> getBFSMoves(const State& state)
 {
-	Node::visitedList().clear();
+	// Create root node of search tree and clear the old tree
+	VisitedNodes::setRoot(state);
 
-	// Create root node of search tree
-	auto fringe = std::queue<Node*> {}; // BFS uses a queue
-	fringe.emplace(Node::visitedList().find(state.toString())->second);
+	// Create fringe
+	auto fringe = std::queue<std::shared_ptr<Node> > {}; // BFS uses a queue
+	fringe.emplace(VisitedNodes::get(state));
 
+	// Useful for debugging
 	auto i = 0;
 
 	while (!fringe.empty())
