@@ -20,8 +20,7 @@ public:
 	static bool contains(const State& state);
 	static std::shared_ptr<Node> get(const State& state);
 	static void setRoot(const State& state);
-	static void insert(const State& state,
-			const State& parentState, size_t move);
+	static void addChild(const State& parentState, size_t move);
 private:
 	static std::unordered_map<std::string, std::shared_ptr<Node> >& get();
 };

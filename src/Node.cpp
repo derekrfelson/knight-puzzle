@@ -88,9 +88,11 @@ std::list<std::shared_ptr<Node> > Node::expand()
 		{
 			auto newState = state;
 			newState.move(i);
+			std::cout << "VisitedNodes::contains("
+					<< newState.toString() << ")" << std::endl;
 			if (!VisitedNodes::contains(newState))
 			{
-				VisitedNodes::insert(newState, state, i);
+				VisitedNodes::addChild(state, i);
 			}
 
 			auto persistentNodeRef = VisitedNodes::get(newState);

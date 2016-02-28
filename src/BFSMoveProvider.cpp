@@ -31,6 +31,8 @@ std::list<size_t> getBFSMoves(const State& state)
 	{
 		++i;
 		std::shared_ptr<Node> currentNode = fringe.front();
+		std::cout << "Expanding front: " << *currentNode
+				<< std::endl << std::endl;
 		fringe.pop();
 
 		auto newNodes = currentNode->expand();
@@ -48,4 +50,6 @@ std::list<size_t> getBFSMoves(const State& state)
 			}
 		}
 	}
+
+	return std::list<size_t>{};
 }

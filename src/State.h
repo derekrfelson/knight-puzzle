@@ -25,6 +25,4 @@ public:
 	std::string toString() const;
 };
 
-
-
 #endif /* SRC_STATE_H_ */

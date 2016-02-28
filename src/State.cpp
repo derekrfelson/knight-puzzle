@@ -26,6 +26,7 @@ std::string State::toString() const
 	ss << pawnsInOnState ? "1" : "0";
 	ss << pawnsCapturedState.to_string();
 	ss << std::get<0>(knightPosition);
+	ss << ":";
 	ss << std::get<1>(knightPosition);
 	return ss.str();
 }
