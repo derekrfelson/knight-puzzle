@@ -10,7 +10,8 @@
 
 Pawn::Pawn(size_t startX, size_t startY, Direction direction)
 : onPosition{startX, startY},
-  on{true}
+  on{true},
+  isCaptured{false}
 {
 	switch (direction)
 	{
@@ -46,6 +47,16 @@ std::tuple<size_t, size_t> Pawn::position(bool on) const
 void Pawn::move()
 {
 	on = !on;
+}
+
+bool Pawn::captured() const
+{
+	return isCaptured;
+}
+
+void Pawn::capture()
+{
+	isCaptured = true;
 }
 
 std::ostream& Pawn::print(std::ostream& stream) const

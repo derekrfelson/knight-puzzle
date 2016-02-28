@@ -1,10 +1,20 @@
 # C++ Ignores
 
-.o
+*.o
+
+# Eclipse ignores
+
+.autotools
+.cproject
+.project
+.settings
 
 # http://www.gnu.org/software/automake
 
 Makefile.in
+Makefile
+config.*
+.deps/*
 
 # http://www.gnu.org/software/autoconf
 

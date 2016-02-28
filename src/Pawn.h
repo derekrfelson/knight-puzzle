@@ -20,11 +20,14 @@ public:
 	std::tuple<size_t, size_t> position() const;
 	std::tuple<size_t, size_t> position(bool on) const;
 	void move();
+	void capture();
+	bool captured() const;
 	std::ostream& print(std::ostream& stream) const;
 private:
 	std::tuple<size_t, size_t> onPosition;
 	std::tuple<size_t, size_t> offPosition;
 	bool on;
+	bool isCaptured;
 };
 
 std::ostream& operator<< (std::ostream& stream, const Pawn& pawn);

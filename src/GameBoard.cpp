@@ -193,9 +193,10 @@ ostream& GameBoard::print(ostream& stream) const
 
 bool GameBoard::isPawn(size_t x, size_t y) const
 {
-	for (auto pawn : pawns())
+	for (const auto& pawn : pawns())
 	{
-		if (get<0>(pawn.position()) == x
+		if (!pawn.captured()
+				&& get<0>(pawn.position()) == x
 				&& get<1>(pawn.position()) == y)
 		{
 			return true;
@@ -247,6 +248,15 @@ void GameBoard::next()
 
 	// Move the knight
 	knight->move(moves.front());
+
+	// Update captured pawns
+	for (auto& pawn : pawns())
+	{
+		if (pawn.position() == knight->position())
+		{
+			pawn.capture();
+		}
+	}
 
 	// Go to the next move in the stack
 	moves.pop_front();

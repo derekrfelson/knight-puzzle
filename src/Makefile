@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 target_triplet = x86_64-unknown-linux-gnu
-bin_PROGRAMS = a.out$(EXEEXT)
+bin_PROGRAMS = knightpuzzle$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -101,9 +101,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_a_out_OBJECTS = knight-puzzle-cpp.$(OBJEXT)
-a_out_OBJECTS = $(am_a_out_OBJECTS)
-a_out_LDADD = $(LDADD)
+am_knightpuzzle_OBJECTS = knight-puzzle-cpp.$(OBJEXT) \
+	GameBoard.$(OBJEXT) Pawn.$(OBJEXT) Knight.$(OBJEXT) \
+	Node.$(OBJEXT) BFSMoveProvider.$(OBJEXT) \
+	VisitedNodes.$(OBJEXT) State.$(OBJEXT)
+knightpuzzle_OBJECTS = $(am_knightpuzzle_OBJECTS)
+knightpuzzle_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -133,8 +136,8 @@ AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(a_out_SOURCES)
-DIST_SOURCES = $(a_out_SOURCES)
+SOURCES = $(knightpuzzle_SOURCES)
+DIST_SOURCES = $(knightpuzzle_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -257,7 +260,8 @@ target_vendor = unknown
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-a_out_SOURCES = knight-puzzle-cpp.cpp
+knightpuzzle_SOURCES = knight-puzzle-cpp.cpp GameBoard.cpp Pawn.cpp Knight.cpp Node.cpp BFSMoveProvider.cpp VisitedNodes.cpp State.cpp
+AM_CXXFLAGS = -std=c++14
 all: all-am
 
 .SUFFIXES:
@@ -334,9 +338,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-a.out$(EXEEXT): $(a_out_OBJECTS) $(a_out_DEPENDENCIES) $(EXTRA_a_out_DEPENDENCIES) 
-	@rm -f a.out$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(a_out_OBJECTS) $(a_out_LDADD) $(LIBS)
+knightpuzzle$(EXEEXT): $(knightpuzzle_OBJECTS) $(knightpuzzle_DEPENDENCIES) $(EXTRA_knightpuzzle_DEPENDENCIES) 
+	@rm -f knightpuzzle$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(knightpuzzle_OBJECTS) $(knightpuzzle_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -344,6 +348,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/BFSMoveProvider.Po
+include ./$(DEPDIR)/GameBoard.Po
+include ./$(DEPDIR)/Knight.Po
+include ./$(DEPDIR)/Node.Po
+include ./$(DEPDIR)/Pawn.Po
+include ./$(DEPDIR)/State.Po
+include ./$(DEPDIR)/VisitedNodes.Po
 include ./$(DEPDIR)/knight-puzzle-cpp.Po
 
 .cpp.o:
