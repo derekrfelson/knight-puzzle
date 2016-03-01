@@ -88,18 +88,12 @@ std::list<std::shared_ptr<Node> > Node::expand()
 		{
 			auto newState = state;
 			newState.move(i);
-			//std::cout << "VisitedNodes::contains("
-			//		<< newState.toString() << ")" << std::endl;
 			if (!VisitedNodes::contains(newState))
 			{
 				VisitedNodes::addChild(state, i);
+				auto persistentNodeRef = VisitedNodes::get(newState);
+				successors.push_back(persistentNodeRef);
 			}
-
-			auto persistentNodeRef = VisitedNodes::get(newState);
-			//std::cout << persistentNodeRef << std::endl;
-			//std::cout << "Expanding node, passing address of "
-			//          << persistentNodeRef << std::endl;
-			successors.push_back(persistentNodeRef);
 		}
 	}
 

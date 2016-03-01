@@ -6,7 +6,7 @@ using namespace std;
 
 int main(void) {
 	GameBoard gb;
-	for (auto i = 0; i < 20; ++i)
+	for (auto i = 0; i < 40; ++i)
 	{
 		cout.clear();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));

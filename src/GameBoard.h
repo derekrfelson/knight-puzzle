@@ -11,7 +11,6 @@
 #include <iosfwd>
 #include <cstddef>
 #include <vector>
-#include <bitset>
 #include <memory>
 #include <list>
 #include "Pawn.h"

@@ -37,3 +37,16 @@ void State::move(size_t index)
 		std::get<0>(knightPosition) + std::get<0>(MoveOrder[index]),
 		std::get<1>(knightPosition) + std::get<1>(MoveOrder[index])};
 }
+
+std::ostream& State::print(std::ostream& stream) const
+{
+	stream << "State{ Knight{ " << std::get<0>(knightPosition)
+			<< ", " << std::get<1>(knightPosition) << " }, "
+			<< "PawnState = " << (pawnsInOnState ? "on" : "off") << " }";
+	return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const State& state)
+{
+	return state.print(stream);
+}

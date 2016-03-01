@@ -9,6 +9,7 @@
 #define SRC_STATE_H_
 
 #include <tuple>
+#include <iosfwd>
 #include <bitset>
 #include <string>
 #include <cstddef>
@@ -21,6 +22,9 @@ public:
 	bool pawnsInOnState;
 	std::tuple<size_t, size_t> knightPosition;
 	std::string toString() const;
+	std::ostream& print(std::ostream& stream) const;
 };
+
+std::ostream& operator<<(std::ostream& stream, const State& state);
 
 #endif /* SRC_STATE_H_ */

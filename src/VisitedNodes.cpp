@@ -54,7 +54,10 @@ void VisitedNodes::addChild(const State& parentState, size_t move)
 	//		<< "state=" << state.toString() << ", "
 	//		<< "parent=" << parentState.toString() << ", "
 	//		<< "move=" << move << std::endl;
-	assert(contains(parentState));
+	assert(contains(parentState)); // Parent does not exist
+	assert(!contains(state)); // Child already visited
+	std::cout << "Adding child " << state
+			<< "(" << move << " from " << parentState << ")" << std::endl;
 	get().emplace(std::pair<std::string, std::shared_ptr<Node> >{
 		state.toString(), std::make_shared<Node>(
 				parentState, get(parentState), move)});
