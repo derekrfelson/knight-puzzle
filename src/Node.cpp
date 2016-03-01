@@ -110,18 +110,14 @@ std::list<std::shared_ptr<Node> > Node::expand()
 // or we have captured more pawns than before.
 bool Node::isGoalState() const
 {
-	if (state.pawnsCapturedState.all())
+	for (auto i = 0; i < 8; ++i)
 	{
-		std::cout << "Goal found: all pawns captured" << std::endl;
-		return true;
-	}
-
-	if (parent != nullptr
-			&& parent->state.pawnsCapturedState.count()
-			< state.pawnsCapturedState.count())
-	{
-		std::cout << "Goal found: captured a pawn" << std::endl;
-		return true;
+		if (!GameBoard::pawns()[i].captured()
+				&& GameBoard::pawns()[i].position(state.pawnsInOnState)
+				   == state.knightPosition)
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -133,9 +129,10 @@ std::list<size_t> Node::getPathToRoot()
 	//std::cout << "Getting path to root" << std::endl;
 	auto moves = std::list<size_t>{};
 	const Node* currentNode = this;
+	std::cout << "Path to root:" << std::endl;
 	while (currentNode->parent != nullptr && currentNode->action != NoAction)
 	{
-		//std::cout << *currentNode << std::endl;
+		std::cout << *currentNode << std::endl;
 		moves.push_front(currentNode->action);
 		currentNode = currentNode->parent.get();
 	}
@@ -146,7 +143,6 @@ std::ostream& Node::print(std::ostream& stream) const
 {
 	stream << "Node{ Knight{ " << std::get<0>(state.knightPosition)
 			<< ", " << std::get<1>(state.knightPosition) << " }, "
-			<< "Captures{ " << state.pawnsCapturedState.to_string() << " }, "
 			<< "PawnState = " << (state.pawnsInOnState ? "on" : "off") << " }";
 	return stream;
 }

@@ -20,7 +20,6 @@ GameBoard::GameBoard()
 : size{18},
   numStartingPawns{8},
   pawnsInOnState{true},
-  pawnsCapturedState{0},
   knight{nullptr},
   moves{}
 {
@@ -182,6 +181,7 @@ ostream& GameBoard::print(ostream& stream) const
 	stream << endl;
 
 	// Extra debug information
+	stream << "Pawns are " << (pawnsInOnState ? "on" : "off") << endl;
 	for (auto pawn : pawns())
 	{
 		stream << pawn << endl;
@@ -229,7 +229,6 @@ void GameBoard::next()
 		moves = getBFSMoves(
 				State {
 					pawnsInOnState,
-					pawnsCapturedState,
 					knight->position()
 				});
 	}
@@ -246,6 +245,9 @@ void GameBoard::next()
 	{
 		pawn.move();
 	}
+
+	// Update the pawn position toggle
+	pawnsInOnState = !pawnsInOnState;
 
 	// Move the knight
 	knight->move(moves.front());

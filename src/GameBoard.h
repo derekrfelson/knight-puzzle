@@ -28,7 +28,6 @@ private:
 	const size_t size;
 	const size_t numStartingPawns;
 	bool pawnsInOnState;
-	std::bitset<8> pawnsCapturedState;
 	std::unique_ptr<Knight> knight;
 	std::list<size_t> moves;
 	bool isPawn(size_t x, size_t y) const;
