@@ -24,7 +24,7 @@ Node::Node(const State& state)
 // Create a child Node based on making a move from the current node
 Node::Node(const State& parentState,
 		std::shared_ptr<Node> parent, size_t moveIndex)
-: Node{State{parentState}}
+: Node{parentState}
 {
 	state.move(moveIndex);
 	this->parent = parent;
@@ -88,8 +88,8 @@ std::list<std::shared_ptr<Node> > Node::expand()
 		{
 			auto newState = state;
 			newState.move(i);
-			std::cout << "VisitedNodes::contains("
-					<< newState.toString() << ")" << std::endl;
+			//std::cout << "VisitedNodes::contains("
+			//		<< newState.toString() << ")" << std::endl;
 			if (!VisitedNodes::contains(newState))
 			{
 				VisitedNodes::addChild(state, i);
@@ -130,12 +130,12 @@ bool Node::isGoalState() const
 // Returns all the moves we took to get here from the root
 std::list<size_t> Node::getPathToRoot()
 {
-	std::cout << "Getting path to root" << std::endl;
+	//std::cout << "Getting path to root" << std::endl;
 	auto moves = std::list<size_t>{};
 	const Node* currentNode = this;
 	while (currentNode->parent != nullptr && currentNode->action != NoAction)
 	{
-		std::cout << *currentNode << std::endl;
+		//std::cout << *currentNode << std::endl;
 		moves.push_front(currentNode->action);
 		currentNode = currentNode->parent.get();
 	}

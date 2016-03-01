@@ -5,13 +5,13 @@
  *      Author: derek
  */
 
+#include <MoveProvider.h>
 #include <iostream>
 #include <ostream>
 #include <random>
 #include <stack>
 #include "GameBoard.h"
 #include "Pawn.h"
-#include "BFSMoveProvider.h"
 #include "Knight.h"
 #include "State.h"
 using namespace std;
@@ -222,13 +222,8 @@ std::ostream& operator<< (std::ostream& stream, const GameBoard& board)
 
 void GameBoard::next()
 {
-	// Toggle each of the pawn positions
-	for (auto& pawn : pawns())
-	{
-		pawn.move();
-	}
-
 	// Figure out how to move the knight
+	// Must do this BEFORE moving any of the other game pieces
 	if (moves.empty())
 	{
 		moves = getBFSMoves(
@@ -244,6 +239,12 @@ void GameBoard::next()
 	{
 		cout << "No moves found!" << endl;
 		return;
+	}
+
+	// Toggle each of the pawn positions
+	for (auto& pawn : pawns())
+	{
+		pawn.move();
 	}
 
 	// Move the knight

@@ -44,14 +44,10 @@ void State::move(size_t index)
 	// Update the pawn capture states
 	for (auto i = 0; i < 8; ++i)
 	{
-		if (!pawnsCapturedState[i])
+		// Pawn is still free, so see if knight is on top of it now
+		if (knightPosition == GameBoard::pawns()[i].position(pawnsInOnState))
 		{
-			// Pawn is still free, so see if knight is on top of it now
-			if (knightPosition
-					== GameBoard::pawns()[i].position(pawnsInOnState))
-			{
-				pawnsCapturedState[i] = 1;
-			}
+			pawnsCapturedState[i] = 1;
 		}
 	}
 }
