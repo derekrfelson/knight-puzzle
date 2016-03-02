@@ -19,19 +19,19 @@ public:
 	explicit Node(const State& state);
 	explicit Node(const State& parentState, std::shared_ptr<Node> parent,
 			size_t moveIndex);
-	~Node();
+	virtual ~Node();
 	State getState() const;
-	std::list<std::shared_ptr<Node> > expand();
+	virtual std::list<std::shared_ptr<Node> > expand();
 	bool isGoalState() const;
 	std::list<size_t> getPathToRoot();
 	std::ostream& print(std::ostream& stream) const;
-private:
+protected:
 	// State
 	State state;
 	// Node recordkeeping
 	std::shared_ptr<Node> parent;
 	size_t action;
-private: // Member functions
+protected: // Member functions
 	bool isValidMove(size_t moveIndex) const;
 };
 

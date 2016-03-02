@@ -11,7 +11,8 @@
 Settings::Settings()
 : size{18},
   numStartingPawns{8},
-  moveProvider{getBFSMoves}
+  moveProvider{getBFSMoves},
+  heuristic{h1}
 {
 }
 

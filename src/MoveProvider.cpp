@@ -13,12 +13,14 @@
 #include <list>
 #include "MoveProvider.h"
 #include "Node.h"
+#include "AStarNode.h"
 #include "State.h"
 #include "VisitedNodes.h"
+#include "VisitedAStarNodes.h"
 
-using NodeHeuristicPair = std::pair<int, std::shared_ptr<Node> >;
+using NodeHeuristicPair = std::shared_ptr<AStarNode>;
 
-static int h1(const Node& node)
+int h1(const Node& node)
 {
 	return 0;
 }
@@ -112,14 +114,15 @@ std::list<size_t> getAStarMovesH1(const State& state)
 	auto cmp = [](
 			const NodeHeuristicPair& left,
 			const NodeHeuristicPair& right)
-			{ return left.first < right.first; };
+			{ return left->getCost() + left->getHeuristic()
+					< right->getCost() + right->getHeuristic(); };
 
 	// Initialize OPEN to initial state
-	VisitedNodes::setRoot(state);
+	VisitedAStarNodes::setRoot(state);
 	std::priority_queue<NodeHeuristicPair,
 	    std::vector<NodeHeuristicPair>, decltype(cmp)> fringe(cmp);
-	auto rootNode = VisitedNodes::get(state);
-	fringe.push({h1(*rootNode), rootNode});
+	auto rootNode = VisitedAStarNodes::get(state);
+	fringe.push(rootNode);
 
 	// Useful for debugging
 	auto expandedNodes = 0;
@@ -131,13 +134,13 @@ std::list<size_t> getAStarMovesH1(const State& state)
 		++expandedNodes;
 
 		// Pick the best node in OPEN
-		std::shared_ptr<Node> currentNode = fringe.top().second;
+		auto currentNode = fringe.top();
 
 		// Place in CLOSED
 		fringe.pop();
 
 		// Generate its successors (recording the successors in a list)
-		auto successors = currentNode->expand();
+		auto successors = currentNode->expandAStar();
 
 		// For each successor do:
 		for (auto& n : successors)
@@ -153,20 +156,13 @@ std::list<size_t> getAStarMovesH1(const State& state)
 			}
 			else
 			{
-				fringe.emplace(NodeHeuristicPair{h1(*n), n});
+				fringe.emplace(n);
 			}
 
-			// If previously generated (found in OPEN or CLOSED),
-			// and if the new path is better than the previous one,
-			// change parent pointer that was recorded in the found node
-
-			// If parent changed
-			// - Update the cost of getting to this node
-			// - Update the cost of getting to the children
-			// Do this by recursively “regenerating” the successors
-			// using the list of successors that had been recorded
-			// in the found node.
 			// Make sure the priority queue is reordered accordingly
+			std::make_heap((NodeHeuristicPair*)(&fringe.top()),
+			               (NodeHeuristicPair*)(&fringe.top()) + fringe.size(),
+			               cmp);
 		}
 	}
 
