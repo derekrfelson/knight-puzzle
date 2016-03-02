@@ -12,6 +12,7 @@
 #include "GameBoard.h"
 #include "Types.h"
 #include "VisitedNodes.h"
+#include "Settings.h"
 
 // Create a Node based on the current state of the GameBoard
 Node::Node(const State& state)
@@ -53,7 +54,7 @@ bool Node::isValidMove(size_t moveIndex) const
 	}
 	else
 	{
-		if (xPos + xDiff >= 18)
+		if (xPos + xDiff >= Settings::instance().size)
 		{
 			return false;
 		}
@@ -68,7 +69,7 @@ bool Node::isValidMove(size_t moveIndex) const
 	}
 	else
 	{
-		if (yPos + yDiff >= 18)
+		if (yPos + yDiff >= Settings::instance().size)
 		{
 			return false;
 		}
@@ -104,11 +105,10 @@ std::list<std::shared_ptr<Node> > Node::expand()
 // or we have captured more pawns than before.
 bool Node::isGoalState() const
 {
-	for (auto i = 0; i < 8; ++i)
+	for (const auto& pawn : GameBoard::instance().pawns)
 	{
-		if (!GameBoard::pawns()[i].captured()
-				&& GameBoard::pawns()[i].position(state.pawnsInOnState)
-				   == state.knightPosition)
+		if (!pawn.captured()
+				&& pawn.position(state.pawnsInOnState) == state.knightPosition)
 		{
 			return true;
 		}

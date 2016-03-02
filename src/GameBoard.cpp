@@ -14,18 +14,18 @@
 #include "Pawn.h"
 #include "Knight.h"
 #include "State.h"
+#include "Settings.h"
 using namespace std;
 
 GameBoard::GameBoard()
-: size{18},
-  numStartingPawns{8},
-  pawnsInOnState{true},
+: pawnsInOnState{true},
   knight{nullptr},
   moves{}
 {
 	// Seed the random number generator with random data from the OS
 	auto gen = std::mt19937{std::random_device{}()};
-	auto randBoardSize = std::uniform_int_distribution<size_t>{0, size-1};
+	auto randBoardSize = std::uniform_int_distribution<size_t>
+		{0, Settings::instance().size - 1};
 	auto randDirection = std::uniform_int_distribution<size_t>(0, 3);
 
 	// Find a valid place for the knight first
@@ -34,7 +34,7 @@ GameBoard::GameBoard()
 	knight = make_unique<Knight>(knightX, knightY);
 
 	// Generate the pawns we start with, making sure each has a valid place
-	for (auto i = 0; i < numStartingPawns; ++i)
+	for (auto i = 0; i < Settings::instance().numStartingPawns; ++i)
 	{
 		auto validPawn = false;
 
@@ -79,14 +79,14 @@ GameBoard::GameBoard()
 				break;
 			case 1:
 				d = Direction::RIGHT;
-				if (startX == size - 1)
+				if (startX == Settings::instance().size - 1)
 				{
 					validPawn = false;
 				}
 				break;
 			case 2:
 				d = Direction::DOWN;
-				if (startY == size - 1)
+				if (startY == Settings::instance().size - 1)
 				{
 					validPawn = false;
 				}
@@ -101,7 +101,7 @@ GameBoard::GameBoard()
 			}
 
 			// Disallow pawns too close to one another
-			for (auto pawn : pawns())
+			for (const auto& pawn : pawns)
 			{
 				auto otherX = get<0>(pawn.position());
 				auto otherY = get<1>(pawn.position());
@@ -130,31 +130,31 @@ GameBoard::GameBoard()
 			// Generate the pawn
 			if (validPawn)
 			{
-				pawns().emplace_back(Pawn{startX, startY, d});
+				pawns.emplace_back(Pawn{startX, startY, d});
 			}
 		}
 	}
 }
 
-std::vector<Pawn>& GameBoard::pawns()
+GameBoard& GameBoard::instance()
 {
-	static std::vector<Pawn>* pawns = new std::vector<Pawn>{};
-	return *pawns;
+	static GameBoard* instance = new GameBoard{};
+	return *instance;
 }
 
 ostream& GameBoard::print(ostream& stream) const
 {
 	// Top border
-	for (auto i = 0; i < size+2; ++i)
+	for (auto i = 0; i < Settings::instance().size+2; ++i)
 	{
 		stream << "#";
 	}
 	stream << endl;
 
-	for (auto y = 0; y < size; ++y)
+	for (auto y = 0; y < Settings::instance().size; ++y)
 	{
 		stream << "#"; // Left border
-		for (auto x = 0; x < size; ++x)
+		for (auto x = 0; x < Settings::instance().size; ++x)
 		{
 			// Print the correct character for the (x,y) position
 			if (isPawn(x, y))
@@ -175,7 +175,7 @@ ostream& GameBoard::print(ostream& stream) const
 	}
 
 	// Bottom border
-	for (auto i = 0; i < size+2; ++i)
+	for (auto i = 0; i < Settings::instance().size+2; ++i)
 	{
 		stream << "#";
 	}
@@ -183,7 +183,7 @@ ostream& GameBoard::print(ostream& stream) const
 
 	// Extra debug information
 	stream << "Pawns are " << (pawnsInOnState ? "on" : "off") << endl;
-	for (auto pawn : pawns())
+	for (const auto& pawn : pawns)
 	{
 		stream << pawn << endl;
 	}
@@ -194,7 +194,7 @@ ostream& GameBoard::print(ostream& stream) const
 
 bool GameBoard::isPawn(size_t x, size_t y) const
 {
-	for (const auto& pawn : pawns())
+	for (const auto& pawn : pawns)
 	{
 		if (!pawn.captured()
 				&& get<0>(pawn.position()) == x
@@ -227,7 +227,7 @@ void GameBoard::next()
 	// Must do this BEFORE moving any of the other game pieces
 	if (moves.empty())
 	{
-		moves = getBFSMoves(
+		moves = Settings::instance().moveProvider(
 				State {
 					pawnsInOnState,
 					knight->position()
@@ -242,7 +242,7 @@ void GameBoard::next()
 	}
 
 	// Toggle each of the pawn positions
-	for (auto& pawn : pawns())
+	for (auto& pawn : pawns)
 	{
 		pawn.move();
 	}
@@ -254,7 +254,7 @@ void GameBoard::next()
 	knight->move(moves.front());
 
 	// Update captured pawns
-	for (auto& pawn : pawns())
+	for (auto& pawn : pawns)
 	{
 		if (pawn.position() == knight->position())
 		{

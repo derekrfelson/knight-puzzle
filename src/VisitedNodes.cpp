@@ -13,15 +13,7 @@
 
 bool VisitedNodes::contains(const State& state)
 {
-	auto ret = get().find(state.toString()) != end(get());
-	//std::cout << "Is " << state.toString() << " in Visited Nodes?"
-	//		<< (ret ? " Yes." : " No.") << std::endl;
-	//for(auto kv : get())
-	//{
-	//	std::cout << "{" << kv.first << "," << *kv.second << "}," << std::endl;
-	//}
-	//std::cout << std::endl;
-	return ret;
+	return get().find(state.toString()) != end(get());
 }
 
 std::shared_ptr<Node> VisitedNodes::get(const State& state)
@@ -50,14 +42,10 @@ void VisitedNodes::addChild(const State& parentState, size_t move)
 {
 	State state{parentState};
 	state.move(move);
-	//std::cerr << "VisitedNodes::insert("
-	//		<< "state=" << state.toString() << ", "
-	//		<< "parent=" << parentState.toString() << ", "
-	//		<< "move=" << move << std::endl;
 	assert(contains(parentState)); // Parent does not exist
 	assert(!contains(state)); // Child already visited
-	std::cout << "Adding child " << state
-			<< "(" << move << " from " << parentState << ")" << std::endl;
+	//std::cout << "Adding child " << state
+	//		<< "(" << move << " from " << parentState << ")" << std::endl;
 	get().emplace(std::pair<std::string, std::shared_ptr<Node> >{
 		state.toString(), std::make_shared<Node>(
 				parentState, get(parentState), move)});

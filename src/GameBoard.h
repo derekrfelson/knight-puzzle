@@ -14,21 +14,21 @@
 #include <memory>
 #include <list>
 #include "Pawn.h"
+class State;
 class Knight;
 
 class GameBoard {
 public:
-	explicit GameBoard();
 	~GameBoard();
 	std::ostream& print(std::ostream& stream) const;
 	void next();
-	static std::vector<Pawn>& pawns();
+	static GameBoard& instance();
+	std::vector<Pawn> pawns;
 private:
-	const size_t size;
-	const size_t numStartingPawns;
 	bool pawnsInOnState;
 	std::unique_ptr<Knight> knight;
 	std::list<size_t> moves;
+	explicit GameBoard();
 	bool isPawn(size_t x, size_t y) const;
 	bool isKnight(size_t x, size_t y) const;
 };

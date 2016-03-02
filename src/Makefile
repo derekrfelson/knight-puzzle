@@ -103,8 +103,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_knightpuzzle_OBJECTS = knight-puzzle-cpp.$(OBJEXT) \
 	GameBoard.$(OBJEXT) Pawn.$(OBJEXT) Knight.$(OBJEXT) \
-	Node.$(OBJEXT) BFSMoveProvider.$(OBJEXT) \
-	VisitedNodes.$(OBJEXT) State.$(OBJEXT)
+	Node.$(OBJEXT) MoveProvider.$(OBJEXT) VisitedNodes.$(OBJEXT) \
+	State.$(OBJEXT) Settings.$(OBJEXT)
 knightpuzzle_OBJECTS = $(am_knightpuzzle_OBJECTS)
 knightpuzzle_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -260,7 +260,7 @@ target_vendor = unknown
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-knightpuzzle_SOURCES = knight-puzzle-cpp.cpp GameBoard.cpp Pawn.cpp Knight.cpp Node.cpp BFSMoveProvider.cpp VisitedNodes.cpp State.cpp
+knightpuzzle_SOURCES = knight-puzzle-cpp.cpp GameBoard.cpp Pawn.cpp Knight.cpp Node.cpp MoveProvider.cpp VisitedNodes.cpp State.cpp Settings.cpp
 AM_CXXFLAGS = -std=c++14
 all: all-am
 
@@ -348,11 +348,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/BFSMoveProvider.Po
 include ./$(DEPDIR)/GameBoard.Po
 include ./$(DEPDIR)/Knight.Po
+include ./$(DEPDIR)/MoveProvider.Po
 include ./$(DEPDIR)/Node.Po
 include ./$(DEPDIR)/Pawn.Po
+include ./$(DEPDIR)/Settings.Po
 include ./$(DEPDIR)/State.Po
 include ./$(DEPDIR)/VisitedNodes.Po
 include ./$(DEPDIR)/knight-puzzle-cpp.Po
