@@ -20,6 +20,7 @@ public:
 	explicit Node(const State& parentState, std::shared_ptr<Node> parent,
 			size_t moveIndex);
 	~Node();
+	State getState() const;
 	std::list<std::shared_ptr<Node> > expand();
 	bool isGoalState() const;
 	std::list<size_t> getPathToRoot();

@@ -14,5 +14,6 @@ class State;
 
 std::list<size_t> getBFSMoves(const State& state);
 std::list<size_t> getDFSMoves(const State& state);
+std::list<size_t> getAStarMovesH1(const State& state);
 
 #endif /* SRC_MOVEPROVIDER_H_ */

@@ -133,6 +133,11 @@ std::list<size_t> Node::getPathToRoot()
 	return moves;
 }
 
+State Node::getState() const
+{
+	return state;
+}
+
 std::ostream& Node::print(std::ostream& stream) const
 {
 	stream << "Node{ Knight{ " << std::get<0>(state.knightPosition)
