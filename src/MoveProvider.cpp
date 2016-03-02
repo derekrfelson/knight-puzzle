@@ -115,7 +115,7 @@ std::list<size_t> getAStarMovesH1(const State& state)
 			const NodeHeuristicPair& left,
 			const NodeHeuristicPair& right)
 			{ return left->getCost() + left->getHeuristic()
-					< right->getCost() + right->getHeuristic(); };
+					>= right->getCost() + right->getHeuristic(); };
 
 	// Initialize OPEN to initial state
 	VisitedAStarNodes::setRoot(state);

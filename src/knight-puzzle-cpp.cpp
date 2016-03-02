@@ -26,8 +26,7 @@ int main(int argc, char** argv) {
 	}
 	else if (strncmp(argv[3], "ASTAR-H1", 3) == 0)
 	{
-		cerr << "Not yet implemented" << endl;
-		return 2;
+		Settings::instance().moveProvider = getAStarMovesH1;
 	}
 	else if (strncmp(argv[3], "ASTAR-H2", 3) == 0)
 	{
