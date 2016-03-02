@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <cstring>
+#include <sstream>
 #include "GameBoard.h"
 #include "MoveProvider.h"
 #include "Settings.h"
@@ -43,6 +44,22 @@ int main(int argc, char** argv) {
 		badArgs = true;
 	}
 
+	int tryBoardSize = -1;
+	int tryNumPawns = -1;
+	stringstream{argv[1]} >> tryBoardSize;
+	stringstream{argv[2]} >> tryNumPawns;
+	if (tryBoardSize < 0 || tryNumPawns < 0
+			|| tryBoardSize > 254 || tryNumPawns > 40)
+	{
+		cerr << "Board size or number of pawns invalid or too large" << endl;
+		badArgs = true;
+	}
+	else
+	{
+		Settings::instance().size = tryBoardSize;
+		Settings::instance().numStartingPawns = tryNumPawns;
+	}
+
 	if (badArgs)
 	{
 		cerr << "Usage: knightpuzzle [boardsize] [pawns] [method]" << endl;
@@ -51,14 +68,16 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Settings::instance().size = 30;
-
-	for (auto i = 0; i < 40; ++i)
+	while (!GameBoard::instance().isGameOver())
 	{
 		cout.clear();
 		this_thread::sleep_for(chrono::milliseconds(1000));
 		cout << GameBoard::instance() << endl;
 		GameBoard::instance().next();
 	}
+
+	cout << GameBoard::instance() << endl;
+	cout << "All pawns captured. Game over." << endl;
+
 	return 0;
 }

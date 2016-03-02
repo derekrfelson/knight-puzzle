@@ -22,6 +22,7 @@ public:
 	~GameBoard();
 	std::ostream& print(std::ostream& stream) const;
 	void next();
+	bool isGameOver() const;
 	static GameBoard& instance();
 	std::vector<Pawn> pawns;
 private:

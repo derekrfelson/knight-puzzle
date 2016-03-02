@@ -221,6 +221,18 @@ std::ostream& operator<< (std::ostream& stream, const GameBoard& board)
 	return board.print(stream);
 }
 
+bool GameBoard::isGameOver() const
+{
+	for (const auto& pawn : pawns)
+	{
+		if (!pawn.captured())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 void GameBoard::next()
 {
 	// Figure out how to move the knight
