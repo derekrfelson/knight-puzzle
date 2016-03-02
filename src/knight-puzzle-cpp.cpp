@@ -8,12 +8,19 @@
 #include "Settings.h"
 using namespace std;
 
-int main(int argc, char** argv) {
-	auto badArgs = false;
+void usage()
+{
+	cerr << "Usage: knightpuzzle [boardsize] [pawns] [method]" << endl;
+	cerr << "   where method = BFS | DFS | ASTAR-H1 "
+			"| ASTAR-H2 | ASTAR-HAVG" << endl;
+}
 
+int main(int argc, char** argv)
+{
 	if (argc != 4)
 	{
-		badArgs = true;
+		usage();
+		return 2;
 	}
 
 	if (strncmp(argv[3], "BFS", 3) == 0)
@@ -26,21 +33,23 @@ int main(int argc, char** argv) {
 	}
 	else if (strncmp(argv[3], "ASTAR-H1", 3) == 0)
 	{
-		Settings::instance().moveProvider = getAStarMovesH1;
+		Settings::instance().moveProvider = getAStarMoves;
+		Settings::instance().heuristic = h1compare;
 	}
 	else if (strncmp(argv[3], "ASTAR-H2", 3) == 0)
 	{
-		cerr << "Not yet implemented" << endl;
-		return 2;
+		Settings::instance().moveProvider = getAStarMoves;
+		Settings::instance().heuristic = h2compare;
 	}
 	else if (strncmp(argv[3], "ASTAR-HAVG", 3) == 0)
 	{
-		cerr << "Not yet implemented" << endl;
-		return 2;
+		Settings::instance().moveProvider = getAStarMoves;
+		Settings::instance().heuristic = havgcompare;
 	}
 	else
 	{
-		badArgs = true;
+		usage();
+		return 2;
 	}
 
 	int tryBoardSize = -1;
@@ -51,20 +60,12 @@ int main(int argc, char** argv) {
 			|| tryBoardSize > 254 || tryNumPawns > 40)
 	{
 		cerr << "Board size or number of pawns invalid or too large" << endl;
-		badArgs = true;
+		return 1;
 	}
 	else
 	{
 		Settings::instance().size = tryBoardSize;
 		Settings::instance().numStartingPawns = tryNumPawns;
-	}
-
-	if (badArgs)
-	{
-		cerr << "Usage: knightpuzzle [boardsize] [pawns] [method]" << endl;
-		cerr << "   where method = BFS | DFS | ASTAR-H1 "
-				"| ASTAR-H2 | ASTAR-HAVG" << endl;
-		return 1;
 	}
 
 	while (!GameBoard::instance().isGameOver())

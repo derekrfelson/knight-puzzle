@@ -9,13 +9,14 @@
 #include "Types.h"
 #include "Settings.h"
 #include "VisitedAStarNodes.h"
+#include "MoveProvider.h"
 
 AStarNode::AStarNode(const State& state)
 : Node{state},
   cost{0},
   heuristicCost{0}
 {
-	heuristicCost = Settings::instance().heuristic(*this);
+	heuristicCost = computeHeuristic(*this);
 }
 
 AStarNode::AStarNode(const State& parentState,
@@ -26,7 +27,7 @@ AStarNode::AStarNode(const State& parentState,
   cost{cost},
   heuristicCost{0}
 {
-	heuristicCost = Settings::instance().heuristic(*this);
+	heuristicCost = computeHeuristic(*this);
 }
 
 AStarNode::~AStarNode()

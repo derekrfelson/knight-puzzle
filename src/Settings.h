@@ -12,13 +12,12 @@
 #include <list>
 #include <functional>
 class State;
-class Node;
 
 struct Settings
 {
 public:
 	using MoveProviderFn = std::function<std::list<size_t>(const State&)>;
-	using HeuristicFn = std::function<int(const Node&)>;
+	using HeuristicFn = std::function<int(size_t, size_t, size_t, size_t)>;
 	static Settings& instance();
 	size_t size;
 	size_t numStartingPawns;

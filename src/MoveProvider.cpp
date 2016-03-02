@@ -11,18 +11,66 @@
 #include <queue>
 #include <stack>
 #include <list>
+#include <algorithm>
+#include "GameBoard.h"
 #include "MoveProvider.h"
 #include "Node.h"
 #include "AStarNode.h"
 #include "State.h"
 #include "VisitedNodes.h"
 #include "VisitedAStarNodes.h"
+#include "Settings.h"
 
 using NodeHeuristicPair = std::shared_ptr<AStarNode>;
 
-int h1(const Node& node)
+inline int unsignedAbsDiff(size_t a, size_t b)
 {
-	return 0;
+	return a < b ? b - a : a - b;
+}
+
+// Looks through all the uncaptured pawns and gives you the
+// heuristic to the closest one
+int computeHeuristic(const Node& node)
+{
+	int minH = 999999999;
+	auto state = node.getState();
+	auto knightX = std::get<0>(state.knightPosition);
+	auto knightY = std::get<1>(state.knightPosition);
+	for (auto& pawn : GameBoard::instance().pawns)
+	{
+		if (!pawn.captured())
+		{
+			auto pawnX = std::get<0>(pawn.position(state.pawnsInOnState));
+			auto pawnY = std::get<1>(pawn.position(state.pawnsInOnState));
+			auto h = Settings::instance().heuristic(
+					knightX, knightY, pawnX, pawnY);
+			if (h < minH)
+			{
+				minH = h;
+			}
+		}
+	}
+
+	return minH;
+}
+
+int h1compare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY)
+{
+	return ceil((unsignedAbsDiff(knightX, pawnX)
+			+ unsignedAbsDiff(knightY, pawnY)) / 3.0);
+}
+
+int h2compare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY)
+{
+	return ceil(
+			std::max(unsignedAbsDiff(knightX, pawnX),
+					unsignedAbsDiff(knightY, pawnY)) / 2.0);
+}
+
+int havgcompare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY)
+{
+	return ceil((h1compare(knightX, knightY, pawnX, pawnY)
+			+ h2compare(knightX, knightY, pawnX, pawnY)) / 2.0);
 }
 
 std::list<size_t> getBFSMoves(const State& state)
@@ -109,7 +157,7 @@ std::list<size_t> getDFSMoves(const State& state)
 	return std::list<size_t>{};
 }
 
-std::list<size_t> getAStarMovesH1(const State& state)
+std::list<size_t> getAStarMoves(const State& state)
 {
 	auto cmp = [](
 			const NodeHeuristicPair& left,

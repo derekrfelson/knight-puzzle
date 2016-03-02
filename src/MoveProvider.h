@@ -15,7 +15,10 @@ class Node;
 
 std::list<size_t> getBFSMoves(const State& state);
 std::list<size_t> getDFSMoves(const State& state);
-std::list<size_t> getAStarMovesH1(const State& state);
-int h1(const Node& node);
+std::list<size_t> getAStarMoves(const State& state);
+int h1compare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY);
+int h2compare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY);
+int havgcompare(size_t knightX, size_t knightY, size_t pawnX, size_t pawnY);
+int computeHeuristic(const Node& node);
 
 #endif /* SRC_MOVEPROVIDER_H_ */
